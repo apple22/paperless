@@ -12,6 +12,8 @@ public class CardApplication {
     private ApplicationStatus status;
     private final LocalDateTime createdAt;
     private LocalDateTime termsAgreedAt;
+    private LocalDateTime signedAt;
+    private LocalDateTime submittedAt;
 
     public CardApplication(
             String applicationId,
@@ -40,6 +42,28 @@ public class CardApplication {
 
         this.status = ApplicationStatus.TERMS_AGREED;
         this.termsAgreedAt = agreedAt;
+    }
+
+    public void sign(LocalDateTime signedAt) {
+        if (this.status != ApplicationStatus.TERMS_AGREED) {
+            throw new IllegalStateException(
+                    "전자서명은 약관동의완료 상태에서만 가능합니다. currentStatus=" + this.status.getCode()
+            );
+        }
+
+        this.status = ApplicationStatus.SIGNED;
+        this.signedAt = signedAt;
+    }
+
+    public void submit(LocalDateTime submittedAt) {
+        if (this.status != ApplicationStatus.SIGNED) {
+            throw new IllegalStateException(
+                    "최종 제출은 전자서명완료 상태에서만 가능합니다. currentStatus=" + this.status.getCode()
+            );
+        }
+
+        this.status = ApplicationStatus.SUBMITTED;
+        this.submittedAt = submittedAt;
     }
 
     public String getApplicationId() {
@@ -72,5 +96,13 @@ public class CardApplication {
 
     public LocalDateTime getTermsAgreedAt() {
         return termsAgreedAt;
+    }
+
+    public LocalDateTime getSignedAt() {
+        return signedAt;
+    }
+
+    public LocalDateTime getSubmittedAt() {
+        return submittedAt;
     }
 }

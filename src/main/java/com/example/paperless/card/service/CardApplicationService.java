@@ -5,6 +5,8 @@ import com.example.paperless.card.domain.CardApplication;
 import com.example.paperless.card.dto.CardApplicationCreateRequest;
 import com.example.paperless.card.dto.CardApplicationCreateResponse;
 import com.example.paperless.card.dto.CardApplicationDetailResponse;
+import com.example.paperless.card.dto.CardApplicationSignatureResponse;
+import com.example.paperless.card.dto.CardApplicationSubmitResponse;
 import com.example.paperless.card.dto.CardApplicationTermsAgreementResponse;
 import com.example.paperless.card.repository.CardApplicationMemoryRepository;
 import org.springframework.stereotype.Service;
@@ -59,6 +61,36 @@ public class CardApplicationService {
         );
     }
 
+    public CardApplicationSignatureResponse sign(String applicationId) {
+        CardApplication cardApplication = findApplicationOrThrow(applicationId);
+
+        cardApplication.sign(LocalDateTime.now());
+
+        CardApplication savedApplication = cardApplicationMemoryRepository.save(cardApplication);
+
+        return new CardApplicationSignatureResponse(
+                savedApplication.getApplicationId(),
+                savedApplication.getStatus().getCode(),
+                savedApplication.getStatus().getDescription(),
+                savedApplication.getSignedAt()
+        );
+    }
+
+    public CardApplicationSubmitResponse submit(String applicationId) {
+        CardApplication cardApplication = findApplicationOrThrow(applicationId);
+
+        cardApplication.submit(LocalDateTime.now());
+
+        CardApplication savedApplication = cardApplicationMemoryRepository.save(cardApplication);
+
+        return new CardApplicationSubmitResponse(
+                savedApplication.getApplicationId(),
+                savedApplication.getStatus().getCode(),
+                savedApplication.getStatus().getDescription(),
+                savedApplication.getSubmittedAt()
+        );
+    }
+
     private CardApplication findApplicationOrThrow(String applicationId) {
         return cardApplicationMemoryRepository.findById(applicationId)
                 .orElseThrow(() -> new IllegalArgumentException(
@@ -89,7 +121,9 @@ public class CardApplicationService {
                 cardApplication.getStatus().getCode(),
                 cardApplication.getStatus().getDescription(),
                 cardApplication.getCreatedAt(),
-                cardApplication.getTermsAgreedAt()
+                cardApplication.getTermsAgreedAt(),
+                cardApplication.getSignedAt(),
+                cardApplication.getSubmittedAt()
         );
     }
 }

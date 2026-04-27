@@ -11,6 +11,8 @@ public record CardApplicationDetailResponse(
         String status,
         String statusDescription,
         LocalDateTime createdAt,
-        LocalDateTime termsAgreedAt
+        LocalDateTime termsAgreedAt,
+        LocalDateTime signedAt,
+        LocalDateTime submittedAt
 ) {
 }
