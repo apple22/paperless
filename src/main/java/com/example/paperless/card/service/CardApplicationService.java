@@ -8,23 +8,23 @@ import com.example.paperless.card.dto.CardApplicationDetailResponse;
 import com.example.paperless.card.dto.CardApplicationSignatureResponse;
 import com.example.paperless.card.dto.CardApplicationSubmitResponse;
 import com.example.paperless.card.dto.CardApplicationTermsAgreementResponse;
-import com.example.paperless.card.repository.CardApplicationMemoryRepository;
+import com.example.paperless.card.repository.CardApplicationJpaRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-
-
 @Service
 public class CardApplicationService {
 
-    private final CardApplicationMemoryRepository cardApplicationMemoryRepository;
+    private final CardApplicationJpaRepository cardApplicationRepository;
 
-    public CardApplicationService(CardApplicationMemoryRepository cardApplicationMemoryRepository) {
-        this.cardApplicationMemoryRepository = cardApplicationMemoryRepository;
+    public CardApplicationService(CardApplicationJpaRepository cardApplicationRepository) {
+        this.cardApplicationRepository = cardApplicationRepository;
     }
 
+    @Transactional
     public CardApplicationCreateResponse create(CardApplicationCreateRequest request) {
         ApplicationStatus status = ApplicationStatus.TEMPORARY_SAVED;
 
@@ -38,22 +38,24 @@ public class CardApplicationService {
                 LocalDateTime.now()
         );
 
-        CardApplication savedApplication = cardApplicationMemoryRepository.save(cardApplication);
+        CardApplication savedApplication = cardApplicationRepository.save(cardApplication);
 
         return toCreateResponse(savedApplication);
     }
 
+    @Transactional(readOnly = true)
     public CardApplicationDetailResponse findById(String applicationId) {
         CardApplication cardApplication = findApplicationOrThrow(applicationId);
         return toDetailResponse(cardApplication);
     }
 
+    @Transactional
     public CardApplicationTermsAgreementResponse agreeTerms(String applicationId) {
         CardApplication cardApplication = findApplicationOrThrow(applicationId);
 
         cardApplication.agreeTerms(LocalDateTime.now());
 
-        CardApplication savedApplication = cardApplicationMemoryRepository.save(cardApplication);
+        CardApplication savedApplication = cardApplicationRepository.save(cardApplication);
 
         return new CardApplicationTermsAgreementResponse(
                 savedApplication.getApplicationId(),
@@ -63,12 +65,13 @@ public class CardApplicationService {
         );
     }
 
+    @Transactional
     public CardApplicationSignatureResponse sign(String applicationId) {
         CardApplication cardApplication = findApplicationOrThrow(applicationId);
 
         cardApplication.sign(LocalDateTime.now());
 
-        CardApplication savedApplication = cardApplicationMemoryRepository.save(cardApplication);
+        CardApplication savedApplication = cardApplicationRepository.save(cardApplication);
 
         return new CardApplicationSignatureResponse(
                 savedApplication.getApplicationId(),
@@ -78,12 +81,13 @@ public class CardApplicationService {
         );
     }
 
+    @Transactional
     public CardApplicationSubmitResponse submit(String applicationId) {
         CardApplication cardApplication = findApplicationOrThrow(applicationId);
 
         cardApplication.submit(LocalDateTime.now());
 
-        CardApplication savedApplication = cardApplicationMemoryRepository.save(cardApplication);
+        CardApplication savedApplication = cardApplicationRepository.save(cardApplication);
 
         return new CardApplicationSubmitResponse(
                 savedApplication.getApplicationId(),
@@ -94,7 +98,7 @@ public class CardApplicationService {
     }
 
     private CardApplication findApplicationOrThrow(String applicationId) {
-        return cardApplicationMemoryRepository.findById(applicationId)
+        return cardApplicationRepository.findById(applicationId)
                 .orElseThrow(() -> new IllegalArgumentException(
                         "카드 신청 정보를 찾을 수 없습니다. applicationId=" + applicationId
                 ));

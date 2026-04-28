@@ -1,7 +1,7 @@
 package com.example.paperless.card.controller;
 
 import com.example.paperless.card.dto.CardApplicationCreateRequest;
-import com.example.paperless.card.repository.CardApplicationMemoryRepository;
+import com.example.paperless.card.repository.CardApplicationJpaRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,11 +32,11 @@ class CardApplicationControllerTest {
     private ObjectMapper objectMapper;
 
     @Autowired
-    private CardApplicationMemoryRepository cardApplicationMemoryRepository;
+    private CardApplicationJpaRepository cardApplicationJpaRepository;
 
     @BeforeEach
     void setUp() {
-        cardApplicationMemoryRepository.clear();
+        cardApplicationJpaRepository.deleteAll();
     }
 
     @Test
@@ -65,7 +65,7 @@ class CardApplicationControllerTest {
                 .andExpect(jsonPath("$.data.statusDescription").value("임시저장"))
                 .andExpect(jsonPath("$.data.createdAt").isNotEmpty());
 
-        assertThat(cardApplicationMemoryRepository.count()).isEqualTo(1);
+        assertThat(cardApplicationJpaRepository.count()).isEqualTo(1);
     }
 
     @Test

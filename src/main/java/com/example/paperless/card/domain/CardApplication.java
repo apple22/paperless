@@ -1,20 +1,47 @@
 package com.example.paperless.card.domain;
 
+import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
 
+@Entity
+@Table(name = "card_application")
 public class CardApplication {
-    /*private : 이 클래스 내부에서만 접근 가능 외부에서 함부로 값을 바꾸지 못하게 막습니다.*/
-    /*final은 한 번 값이 정해지면 바꿀 수 없다는 뜻*/
-    private final String applicationId;
-    private final String customerName;
-    private final String phoneNumber;
-    private final String birthDate;
-    private final String cardProductCode;
+
+    @Id
+    @Column(name = "application_id", nullable = false, length = 36)
+    private String applicationId;
+
+    @Column(name = "customer_name", nullable = false, length = 100)
+    private String customerName;
+
+    @Column(name = "phone_number", nullable = false, length = 20)
+    private String phoneNumber;
+
+    @Column(name = "birth_date", nullable = false, length = 8)
+    private String birthDate;
+
+    @Column(name = "card_product_code", nullable = false, length = 50)
+    private String cardProductCode;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false, length = 30)
     private ApplicationStatus status;
-    private final LocalDateTime createdAt;
+
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime createdAt;
+
+    @Column(name = "terms_agreed_at")
     private LocalDateTime termsAgreedAt;
+
+    @Column(name = "signed_at")
     private LocalDateTime signedAt;
+
+    @Column(name = "submitted_at")
     private LocalDateTime submittedAt;
+
+    protected CardApplication() {
+    }
 
     public CardApplication(
             String applicationId,
@@ -25,11 +52,6 @@ public class CardApplication {
             ApplicationStatus status,
             LocalDateTime createdAt
     ) {
-
-        /*this : 현재 객체 자신*/
-        /*
-        생성자로 받은 applicationId 값을 현재 객체의 applicationId 필드에 넣겠다.
-         */
         this.applicationId = applicationId;
         this.customerName = customerName;
         this.phoneNumber = phoneNumber;
