@@ -3,6 +3,15 @@ package com.example.paperless.card.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 
+/*DTO는 Data Transfer Object : 데이터를 주고받기 위한 객체
+* 보통 : DTO는 보통 Controller에서 요청/응답
+* Controller는 외부 요청을 받는 입구
+* 이 Controller는 직접 상태를 바꾸지 않습니다. Service에게 일을 맡깁니다.
+* Service는 실제 업무 로직을 처리하는 계층
+* Repository는 데이터 저장소에 접근하는 계층
+* */
+
+/*record는 데이터를 담기 위한 간단한 클래스*/
 public record CardApplicationCreateRequest(
         @NotBlank(message = "고객명은 필수입니다.")
         String customerName,

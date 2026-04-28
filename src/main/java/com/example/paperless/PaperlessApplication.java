@@ -23,6 +23,11 @@ URL 경로의 값을 메서드 파라미터로 받는 어노테이션
 
 Domain Object
 업무 데이터를 표현하는 내부 객체
+
+클래스 : 설계도
+객체 : 실제 만들어진 물건
+메서드 : 객체가 할수 있는 행동
+
  */
 @SpringBootApplication
 public class PaperlessApplication {

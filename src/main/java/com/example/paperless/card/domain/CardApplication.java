@@ -3,7 +3,8 @@ package com.example.paperless.card.domain;
 import java.time.LocalDateTime;
 
 public class CardApplication {
-
+    /*private : 이 클래스 내부에서만 접근 가능 외부에서 함부로 값을 바꾸지 못하게 막습니다.*/
+    /*final은 한 번 값이 정해지면 바꿀 수 없다는 뜻*/
     private final String applicationId;
     private final String customerName;
     private final String phoneNumber;
@@ -24,6 +25,11 @@ public class CardApplication {
             ApplicationStatus status,
             LocalDateTime createdAt
     ) {
+
+        /*this : 현재 객체 자신*/
+        /*
+        생성자로 받은 applicationId 값을 현재 객체의 applicationId 필드에 넣겠다.
+         */
         this.applicationId = applicationId;
         this.customerName = customerName;
         this.phoneNumber = phoneNumber;

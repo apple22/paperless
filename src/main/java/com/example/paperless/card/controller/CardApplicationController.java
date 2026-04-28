@@ -12,10 +12,17 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+
+/*
+이 어노테이션이 붙으면 Spring이 객체를 직접 만들어서 관리합니다.
+이렇게 Spring이 관리하는 객체를 Bean이라고 합니다.
+ */
 @RestController
 @RequestMapping("/api/card-applications")
 public class CardApplicationController {
 
+    /*Dependency Injection, 필요한 객체를 직접 만들지 않고 Spring이 넣어주는 방식*/
+    /* 어노테이션은 Spring이나 Java에게 힌트를 주는 표시 */
     private final CardApplicationService cardApplicationService;
 
     public CardApplicationController(CardApplicationService cardApplicationService) {
