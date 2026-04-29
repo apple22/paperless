@@ -10,8 +10,11 @@ import com.example.paperless.card.service.CardApplicationService;
 import com.example.paperless.common.ApiResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import com.example.paperless.card.dto.CardApplicationSummaryResponse;
+import java.util.List;
 import org.springframework.web.bind.annotation.*;
-
+import com.example.paperless.card.dto.CardApplicationSummaryResponse;
+import com.example.paperless.common.PageResponse;
 
 /*
 이 어노테이션이 붙으면 Spring이 객체를 직접 만들어서 관리합니다.
@@ -42,6 +45,15 @@ public class CardApplicationController {
             @PathVariable String applicationId
     ) {
         CardApplicationDetailResponse response = cardApplicationService.findById(applicationId);
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
+    @GetMapping
+    public ResponseEntity<ApiResponse<PageResponse<CardApplicationSummaryResponse>>> findAll(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        PageResponse<CardApplicationSummaryResponse> response = cardApplicationService.findAll(page, size);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 

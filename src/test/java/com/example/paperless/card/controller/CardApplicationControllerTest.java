@@ -69,6 +69,89 @@ class CardApplicationControllerTest {
     }
 
     @Test
+    @DisplayName("카드 신청 목록 조회 API를 페이징으로 호출할 수 있다")
+    void findAll_paging_success() throws Exception {
+        // given
+        createApplicationAndGetId();
+
+        CardApplicationCreateRequest secondRequest = new CardApplicationCreateRequest(
+                "김철수",
+                "010-2222-3333",
+                "19950202",
+                "HYUNDAI_CARD_ZERO"
+        );
+
+        String secondRequestBody = objectMapper.writeValueAsString(secondRequest);
+
+        mockMvc.perform(post("/api/card-applications")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding(StandardCharsets.UTF_8.name())
+                        .content(secondRequestBody))
+                .andExpect(status().isOk());
+
+        // when & then
+        mockMvc.perform(get("/api/card-applications")
+                        .param("page", "0")
+                        .param("size", "10"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.code").value("SUCCESS"))
+                .andExpect(jsonPath("$.data.content").isArray())
+                .andExpect(jsonPath("$.data.content.length()").value(2))
+                .andExpect(jsonPath("$.data.page").value(0))
+                .andExpect(jsonPath("$.data.size").value(10))
+                .andExpect(jsonPath("$.data.totalElements").value(2))
+                .andExpect(jsonPath("$.data.totalPages").value(1))
+                .andExpect(jsonPath("$.data.first").value(true))
+                .andExpect(jsonPath("$.data.last").value(true));
+    }
+
+    @Test
+    @DisplayName("카드 신청 목록 조회 API를 호출하면 생성된 신청 목록을 반환한다")
+    void findAll_success() throws Exception {
+        // given
+        String firstApplicationId = createApplicationAndGetId();
+
+        CardApplicationCreateRequest secondRequest = new CardApplicationCreateRequest(
+                "김철수",
+                "010-2222-3333",
+                "19950202",
+                "HYUNDAI_CARD_ZERO"
+        );
+
+        String secondRequestBody = objectMapper.writeValueAsString(secondRequest);
+
+        String secondResponseBody = mockMvc.perform(post("/api/card-applications")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding(StandardCharsets.UTF_8.name())
+                        .content(secondRequestBody))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString(StandardCharsets.UTF_8);
+
+        JsonNode secondJsonNode = objectMapper.readTree(secondResponseBody);
+        String secondApplicationId = secondJsonNode
+                .path("data")
+                .path("applicationId")
+                .asText();
+
+        // when & then
+        mockMvc.perform(get("/api/card-applications"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.code").value("SUCCESS"))
+                .andExpect(jsonPath("$.data").isArray())
+                .andExpect(jsonPath("$.data.length()").value(2))
+                .andExpect(jsonPath("$.data[0].applicationId").value(secondApplicationId))
+                .andExpect(jsonPath("$.data[0].customerName").value("김철수"))
+                .andExpect(jsonPath("$.data[0].status").value("TEMPORARY_SAVED"))
+                .andExpect(jsonPath("$.data[1].applicationId").value(firstApplicationId))
+                .andExpect(jsonPath("$.data[1].customerName").value("홍길동"))
+                .andExpect(jsonPath("$.data[1].status").value("TEMPORARY_SAVED"));
+    }
+
+    @Test
     @DisplayName("카드 신청 생성 후 applicationId로 조회할 수 있다")
     void findById_success() throws Exception {
         // given
